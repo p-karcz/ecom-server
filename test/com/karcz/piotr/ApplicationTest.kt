@@ -1,21 +1,14 @@
 package com.karcz.piotr
 
-import io.ktor.routing.*
 import io.ktor.http.*
-import io.ktor.gson.*
-import io.ktor.features.*
-import io.ktor.serialization.*
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import kotlin.test.*
 import io.ktor.server.testing.*
-import com.karcz.piotr.plugins.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ApplicationTest {
     @Test
     fun testRoot() {
-        withTestApplication({ configureRouting() }) {
+        withTestApplication {
             handleRequest(HttpMethod.Get, "/").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("Hello World!", response.content)
