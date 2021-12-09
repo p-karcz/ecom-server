@@ -1,4 +1,4 @@
-package com.karcz.piotr.database
+package com.karcz.piotr.repository
 
 import com.typesafe.config.ConfigFactory
 import org.jetbrains.exposed.sql.Database

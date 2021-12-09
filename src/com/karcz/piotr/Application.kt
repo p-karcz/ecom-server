@@ -7,8 +7,15 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
-import com.karcz.piotr.database.initDatabase
-import com.karcz.piotr.routes.loginRoute
+import com.karcz.piotr.repository.initDatabase
+import com.karcz.piotr.routes.*
+
+// TODO start hashing passwords
+// TODO add tests
+// TODO implement authentication
+// TODO implement koin
+// TODO implement coroutines
+// TODO add data transfer objects and start using domain models
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -38,6 +45,10 @@ fun Application.module(testing: Boolean = false) {
     initDatabase()
 
     install(Routing) {
-        loginRoute()
+        cartRoute()
+        customerRoute()
+        orderDetailsRoute()
+        ordersRoute()
+        productRoute()
     }
 }
