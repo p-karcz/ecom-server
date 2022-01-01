@@ -1,26 +1,29 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.mappers.toAddressResource
-import com.karcz.piotr.repository.resources.AddressResource
+import com.karcz.piotr.data.AddressModel
+import com.karcz.piotr.data.toAddressModel
 import com.karcz.piotr.repository.tables.AddressesDatabaseTable
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class AddressDaoImpl : AddressDao {
 
-    override fun isIn(address: AddressResource): Boolean {
+    override fun isIn(address: AddressModel): Boolean {
         return transaction {
             (AddressesDatabaseTable.select { AddressesDatabaseTable.id eq address.id }.singleOrNull())
         } != null
     }
 
-    override fun get(id: Int): AddressResource? {
+    override fun get(id: Int): AddressModel? {
         return transaction {
             AddressesDatabaseTable.select { AddressesDatabaseTable.id eq id }.singleOrNull()
-        }?.toAddressResource()
+        }?.toAddressModel()
     }
 
-    override fun add(address: AddressResource) {
+    override fun add(address: AddressModel) {
         transaction {
             AddressesDatabaseTable.insert {
                 it[id] = address.id
@@ -34,7 +37,7 @@ class AddressDaoImpl : AddressDao {
         }
     }
 
-    override fun update(address: AddressResource) {
+    override fun update(address: AddressModel) {
         transaction {
             AddressesDatabaseTable.update({ AddressesDatabaseTable.id eq address.id }) {
                 it[id] = address.id
@@ -48,7 +51,7 @@ class AddressDaoImpl : AddressDao {
         }
     }
 
-    override fun remove(address: AddressResource) {
+    override fun remove(address: AddressModel) {
         transaction {
             AddressesDatabaseTable.deleteWhere { AddressesDatabaseTable.id eq address.id }
         }

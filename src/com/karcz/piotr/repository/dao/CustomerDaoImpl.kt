@@ -1,28 +1,29 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.mappers.toCustomerResource
-import com.karcz.piotr.repository.resources.CustomerResource
-import com.karcz.piotr.repository.tables.AddressesDatabaseTable
+import com.karcz.piotr.data.CustomerModel
+import com.karcz.piotr.data.toCustomerModel
 import com.karcz.piotr.repository.tables.CustomersDatabaseTable
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class CustomerDaoImpl : CustomerDao {
 
-    override fun isIn(customer: CustomerResource): Boolean {
+    override fun isIn(customer: CustomerModel): Boolean {
         return transaction {
             (CustomersDatabaseTable.select { CustomersDatabaseTable.email eq customer.email }.singleOrNull())
         } != null
     }
 
-    override fun get(email: String): CustomerResource? {
+    override fun get(email: String): CustomerModel? {
         return transaction {
             CustomersDatabaseTable.select { CustomersDatabaseTable.email eq email}.singleOrNull()
-        }?.toCustomerResource()
+        }?.toCustomerModel()
     }
 
-    override fun add(customer: CustomerResource) {
+    override fun add(customer: CustomerModel) {
         transaction {
             CustomersDatabaseTable.insert {
                 it[email] = customer.email
@@ -34,7 +35,7 @@ class CustomerDaoImpl : CustomerDao {
         }
     }
 
-    override fun update(customer: CustomerResource) {
+    override fun update(customer: CustomerModel) {
         transaction {
             CustomersDatabaseTable.update({ CustomersDatabaseTable.email eq customer.email }) {
                 it[email] = customer.email
@@ -46,7 +47,7 @@ class CustomerDaoImpl : CustomerDao {
         }
     }
 
-    override fun remove(customer: CustomerResource) {
+    override fun remove(customer: CustomerModel) {
         transaction {
             CustomersDatabaseTable.deleteWhere { CustomersDatabaseTable.email eq customer.email }
         }

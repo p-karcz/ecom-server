@@ -1,11 +1,11 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.repository.resources.AddressResource
+import com.karcz.piotr.data.AddressModel
 
 interface AddressDao {
-    fun isIn(address: AddressResource): Boolean
-    fun get(id: Int): AddressResource?
-    fun add(address: AddressResource)
-    fun update(address: AddressResource)
-    fun remove(address: AddressResource)
+    fun isIn(address: AddressModel): Boolean
+    fun get(id: Int): AddressModel?
+    fun add(address: AddressModel)
+    fun update(address: AddressModel)
+    fun remove(address: AddressModel)
 }

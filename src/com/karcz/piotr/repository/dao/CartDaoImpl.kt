@@ -1,35 +1,35 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.mappers.toCartResource
-import com.karcz.piotr.repository.resources.CartResource
+import com.karcz.piotr.data.CartModel
+import com.karcz.piotr.data.toCartModel
 import com.karcz.piotr.repository.tables.CartsDatabaseTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CartDaoImpl : CartDao {
 
-    override fun isIn(cart: CartResource): Boolean {
+    override fun isIn(cart: CartModel): Boolean {
         return transaction { (CartsDatabaseTable.select {
             (CartsDatabaseTable.customerEmail eq cart.customerEmail) and
                     (CartsDatabaseTable.productId eq cart.productId)
         }.singleOrNull()) } != null
     }
 
-    override fun getAllForClient(clientEmail: String): List<CartResource> {
+    override fun getAllForClient(clientEmail: String): List<CartModel> {
         return transaction {
             CartsDatabaseTable.select { CartsDatabaseTable.customerEmail eq clientEmail }.toList()
-        }.map { it.toCartResource() }
+        }.map { it.toCartModel() }
     }
 
-    override fun get(customerEmail: String, productId: Int): CartResource? {
+    override fun get(customerEmail: String, productId: Int): CartModel? {
         return transaction {
             CartsDatabaseTable.select {
                 (CartsDatabaseTable.customerEmail eq customerEmail) and (CartsDatabaseTable.productId eq productId)
             }.singleOrNull()
-        }?.toCartResource()
+        }?.toCartModel()
     }
 
-    override fun add(cart: CartResource) {
+    override fun add(cart: CartModel) {
         transaction {
             CartsDatabaseTable.insert {
                 it[customerEmail] = cart.customerEmail
@@ -39,7 +39,7 @@ class CartDaoImpl : CartDao {
         }
     }
 
-    override fun update(cart: CartResource) {
+    override fun update(cart: CartModel) {
         transaction {
             CartsDatabaseTable.update({
                 (CartsDatabaseTable.customerEmail eq cart.customerEmail) and
@@ -52,7 +52,7 @@ class CartDaoImpl : CartDao {
         }
     }
 
-    override fun remove(cart: CartResource) {
+    override fun remove(cart: CartModel) {
         transaction {
             CartsDatabaseTable.deleteWhere {
                 (CartsDatabaseTable.customerEmail eq cart.customerEmail) and

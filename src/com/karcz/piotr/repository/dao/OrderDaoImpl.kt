@@ -1,7 +1,7 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.mappers.toOrderResource
-import com.karcz.piotr.repository.resources.OrderResource
+import com.karcz.piotr.data.OrderModel
+import com.karcz.piotr.data.toOrderModel
 import com.karcz.piotr.repository.tables.OrdersDatabaseTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -10,25 +10,25 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class OrderDaoImpl : OrderDao {
 
-    override fun isIn(order: OrderResource): Boolean {
+    override fun isIn(order: OrderModel): Boolean {
         return transaction {
             (OrdersDatabaseTable.select { OrdersDatabaseTable.id eq order.id }.singleOrNull())
         } != null
     }
 
-    override fun get(id: Int): OrderResource? {
+    override fun get(id: Int): OrderModel? {
         return transaction {
             OrdersDatabaseTable.select { OrdersDatabaseTable.id eq id }.singleOrNull()
-        }?.toOrderResource()
+        }?.toOrderModel()
     }
 
-    override fun getAllForCustomer(customerEmail: String): List<OrderResource> {
+    override fun getAllForCustomer(customerEmail: String): List<OrderModel> {
         return transaction {
             OrdersDatabaseTable.selectAll().toList()
-        }.map { it.toOrderResource() }
+        }.map { it.toOrderModel() }
     }
 
-    override fun add(order: OrderResource) {
+    override fun add(order: OrderModel) {
         transaction {
             OrdersDatabaseTable.insert {
                 it[id] = order.id

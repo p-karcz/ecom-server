@@ -1,11 +1,10 @@
 package com.karcz.piotr.routes
 
+import com.karcz.piotr.data.CartModel
 import com.karcz.piotr.repository.dao.CartDao
 import com.karcz.piotr.repository.dao.CartDaoImpl
-import com.karcz.piotr.repository.resources.CartResource
-import com.karcz.piotr.transfer.Response
+import com.karcz.piotr.transfer.data.Response
 import io.ktor.application.*
-import io.ktor.features.ContentTransformationException
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -17,7 +16,7 @@ fun Route.cartRoute() {
     route("/me/cart") {
         get {
             // TODO retrieve email when a user is logged in
-            val cartItems: List<CartResource> = cartDao.getAllForClient("sampleemail@example.com")
+            val cartItems: List<CartModel> = cartDao.getAllForClient("sampleemail@example.com")
             call.respond(HttpStatusCode.OK, cartItems)
         }
     }
@@ -25,7 +24,7 @@ fun Route.cartRoute() {
     route("/me/cart/addItem") {
         post {
             val request = try {
-                call.receive<CartResource>()
+                call.receive<CartModel>()
             } catch (e: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
@@ -45,7 +44,7 @@ fun Route.cartRoute() {
     route("/me/cart/removeItem") {
         delete {
             val request = try {
-                call.receive<CartResource>()
+                call.receive<CartModel>()
             } catch (e: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
@@ -63,7 +62,7 @@ fun Route.cartRoute() {
     route("/me/cart/updateItem") {
         put {
             val request = try {
-                call.receive<CartResource>()
+                call.receive<CartModel>()
             } catch (e: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@put

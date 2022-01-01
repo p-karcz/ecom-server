@@ -1,4 +1,4 @@
-package com.karcz.piotr.transfer
+package com.karcz.piotr.transfer.data
 
 data class Response(
     val successful: Boolean,

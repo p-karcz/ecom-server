@@ -1,17 +1,18 @@
-package com.karcz.piotr.mappers
+package com.karcz.piotr.data
 
-import com.karcz.piotr.repository.resources.OrderResource
 import com.karcz.piotr.repository.tables.OrdersDatabaseTable
-import com.karcz.piotr.domain.OrderDomainModel
 import org.jetbrains.exposed.sql.ResultRow
 
-fun OrderResource.toDomain() = OrderDomainModel(
-    totalQuantity = this.totalQuantity,
-    totalPrice = this.totalPrice,
-    date = this.date
+data class OrderModel(
+    val id: Int,
+    val customerEmail: String,
+    val addressId: Int,
+    val totalQuantity: Int,
+    val totalPrice: Double,
+    val date: String
 )
 
-fun ResultRow.toOrderResource() = OrderResource(
+fun ResultRow.toOrderModel() = OrderModel(
     id = this[OrdersDatabaseTable.id],
     customerEmail = this[OrdersDatabaseTable.customerEmail],
     addressId = this[OrdersDatabaseTable.addressId],

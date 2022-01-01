@@ -1,12 +1,12 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.repository.resources.CartResource
+import com.karcz.piotr.data.CartModel
 
 interface CartDao {
-    fun isIn(cart: CartResource): Boolean
-    fun get(customerEmail: String, productId: Int): CartResource?
-    fun getAllForClient(clientEmail: String): List<CartResource>
-    fun add(cart: CartResource)
-    fun update(cart: CartResource)
-    fun remove(cart: CartResource)
+    fun isIn(cart: CartModel): Boolean
+    fun get(customerEmail: String, productId: Int): CartModel?
+    fun getAllForClient(clientEmail: String): List<CartModel>
+    fun add(cart: CartModel)
+    fun update(cart: CartModel)
+    fun remove(cart: CartModel)
 }

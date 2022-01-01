@@ -1,18 +1,17 @@
-package com.karcz.piotr.mappers
+package com.karcz.piotr.data
 
-import com.karcz.piotr.repository.resources.CustomerResource
 import com.karcz.piotr.repository.tables.CustomersDatabaseTable
-import com.karcz.piotr.domain.CustomerDomainModel
 import org.jetbrains.exposed.sql.ResultRow
 
-fun CustomerResource.toDomain() = CustomerDomainModel(
-    name = this.name,
-    surname = this.surname,
-    email = this.email,
-    password = this.password
+data class CustomerModel(
+    val email: String,
+    val addressId: Int?,
+    val name: String,
+    val surname: String,
+    val password: String
 )
 
-fun ResultRow.toCustomerResource() = CustomerResource(
+fun ResultRow.toCustomerModel() = CustomerModel(
     email = this[CustomersDatabaseTable.email],
     addressId = this[CustomersDatabaseTable.addressId],
     name = this[CustomersDatabaseTable.name],

@@ -47,8 +47,8 @@ fun Application.module(testing: Boolean = false) {
     install(Routing) {
         cartRoute()
         customerRoute()
-        orderDetailsRoute()
         ordersRoute()
         productRoute()
+        authorizationRoute()
     }
 }
