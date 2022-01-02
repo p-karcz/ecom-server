@@ -4,7 +4,7 @@ import com.karcz.piotr.repository.tables.AddressesDatabaseTable
 import org.jetbrains.exposed.sql.ResultRow
 
 data class AddressModel(
-    val id: Int,
+    val id: Int?,
     val street: String,
     val streetNumber: Int,
     val flatNumber: Int,

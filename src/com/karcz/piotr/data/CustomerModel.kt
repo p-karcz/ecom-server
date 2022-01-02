@@ -1,6 +1,7 @@
 package com.karcz.piotr.data
 
 import com.karcz.piotr.repository.tables.CustomersDatabaseTable
+import io.ktor.auth.*
 import org.jetbrains.exposed.sql.ResultRow
 
 data class CustomerModel(
@@ -9,7 +10,7 @@ data class CustomerModel(
     val name: String,
     val surname: String,
     val password: String
-)
+) : Principal
 
 fun ResultRow.toCustomerModel() = CustomerModel(
     email = this[CustomersDatabaseTable.email],

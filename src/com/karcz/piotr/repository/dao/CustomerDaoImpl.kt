@@ -11,9 +11,9 @@ import org.jetbrains.exposed.sql.update
 
 class CustomerDaoImpl : CustomerDao {
 
-    override fun isIn(customer: CustomerModel): Boolean {
+    override fun isIn(email: String): Boolean {
         return transaction {
-            (CustomersDatabaseTable.select { CustomersDatabaseTable.email eq customer.email }.singleOrNull())
+            (CustomersDatabaseTable.select { CustomersDatabaseTable.email eq email }.singleOrNull())
         } != null
     }
 

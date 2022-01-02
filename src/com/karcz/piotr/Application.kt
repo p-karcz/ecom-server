@@ -1,5 +1,6 @@
 package com.karcz.piotr
 
+import com.karcz.piotr.repository.dao.CustomerDaoImpl
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
@@ -9,13 +10,13 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import com.karcz.piotr.repository.initDatabase
 import com.karcz.piotr.routes.*
+import com.karcz.piotr.security.JWTService
+import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 
-// TODO start hashing passwords
 // TODO add tests
-// TODO implement authentication
 // TODO implement koin
 // TODO implement coroutines
-// TODO add data transfer objects and start using domain models
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -44,11 +45,28 @@ fun Application.module(testing: Boolean = false) {
 
     initDatabase()
 
+    val jwtService = JWTService(
+        environment.config.property("jwt.secret").getString(),
+        environment.config.property("jwt.issuer").getString(),
+        environment.config.property("jwt.audience").getString()
+    )
+
+    install(Authentication) {
+        jwt {
+            realm = environment.config.property("jwt.realm").getString()
+            verifier(jwtService.verifier)
+
+            validate { credential ->
+                CustomerDaoImpl().get(credential.payload.getClaim("email").asString())
+            }
+        }
+    }
+
     install(Routing) {
         cartRoute()
         customerRoute()
         ordersRoute()
         productRoute()
-        authorizationRoute()
+        authorizationRoute(jwtService)
     }
 }

@@ -30,15 +30,15 @@ fun Route.customerRoute() {
 
     route("/me/update") {
         put {
-            val request = try {
+            val customerModel = try {
                 call.receive<CustomerModel>()
             } catch (e: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@put
             }
 
-            if (customerDao.isIn(request)) {
-                customerDao.update(request)
+            if (customerDao.isIn(customerModel.email)) {
+                customerDao.update(customerModel)
                 call.respond(HttpStatusCode.OK, Response(true, "Customer data updated."))
             } else {
                 call.respond(HttpStatusCode.OK, Response(false, "Customer does not exist."))
@@ -48,15 +48,15 @@ fun Route.customerRoute() {
 
     route("/me/removeAccount") {
         delete {
-            val request = try {
+            val customerModel = try {
                 call.receive<CustomerModel>()
             } catch (e: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
             }
 
-            if (customerDao.isIn(request)) {
-                customerDao.remove(request)
+            if (customerDao.isIn(customerModel.email)) {
+                customerDao.remove(customerModel)
                 // TODO Logout
                 call.respond(HttpStatusCode.OK, Response(true, "Customer removed."))
             } else {
@@ -85,7 +85,7 @@ fun Route.customerRoute() {
                 return@post
             }
 
-            if (addressDao.isIn(request)) {
+            if (addressDao.isInOrFalse(request)) {
                 call.respond(HttpStatusCode.OK, Response(false, "Address already exists."))
             } else {
                 addressDao.add(request)
@@ -101,7 +101,7 @@ fun Route.customerRoute() {
                 return@put
             }
 
-            if (addressDao.isIn(request)) {
+            if (addressDao.isInOrFalse(request)) {
                 addressDao.update(request)
                 call.respond(HttpStatusCode.OK, Response(true, "Address updated."))
             } else {
@@ -117,7 +117,7 @@ fun Route.customerRoute() {
                 return@delete
             }
 
-            if (addressDao.isIn(request)) {
+            if (addressDao.isInOrFalse(request)) {
                 addressDao.remove(request)
                 call.respond(HttpStatusCode.OK, Response(true, "Address removed"))
             } else {
