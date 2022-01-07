@@ -4,6 +4,7 @@ val logbackVersion: String by project
 val exposedVersion: String by project
 val postgresVersion: String by project
 val bcryptVersion: String by project
+val kotlinxDatetimeVersion: String by project
 
 plugins {
     application
@@ -40,6 +41,7 @@ dependencies {
     implementation("at.favre.lib:bcrypt:$bcryptVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDatetimeVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }

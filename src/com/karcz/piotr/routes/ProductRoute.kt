@@ -57,7 +57,7 @@ fun Route.productRoute() {
             val orderByParameter = ProductsOrderByQueryParameter.process(call.request.queryParameters["orderBy"])
             val filter = try {
                 call.receive<ProductsFilterModel>()
-            } catch (e: ContentTransformationException) {
+            } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
@@ -66,7 +66,7 @@ fun Route.productRoute() {
         }
 
         get {
-            val products = productDao.getAll()
+            val products = productDao.getAllAvailable()
             call.respond(HttpStatusCode.OK, products)
         }
     }

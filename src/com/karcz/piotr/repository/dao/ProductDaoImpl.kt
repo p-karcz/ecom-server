@@ -16,6 +16,12 @@ class ProductDaoImpl : ProductDao {
         } != null
     }
 
+    override fun isAvailable(productId: Int, quantity: Int): Boolean {
+        return transaction {
+            ProductsDatabaseTable.select { ProductsDatabaseTable.id eq productId }.singleOrNull()
+        }?.toProductModel()?.quantity?.let { it >= quantity } ?: false
+    }
+
     override fun get(id: Int): ProductModel? {
         return transaction {
             ProductsDatabaseTable.select { ProductsDatabaseTable.id eq id }.singleOrNull()
@@ -49,6 +55,15 @@ class ProductDaoImpl : ProductDao {
         return transaction {
             ProductsDatabaseTable
                 .selectAll()
+                .orderBy(ProductsDatabaseTable.popularity)
+                .toList()
+        }.map { it.toProductModel() }
+    }
+
+    override fun getAllAvailable(): List<ProductModel> {
+        return transaction {
+            ProductsDatabaseTable
+                .select { ProductsDatabaseTable.quantity greater 0 }
                 .orderBy(ProductsDatabaseTable.popularity)
                 .toList()
         }.map { it.toProductModel() }
@@ -102,6 +117,14 @@ class ProductDaoImpl : ProductDao {
                 it[popularity] = productModel.popularity
                 it[quantity] = productModel.quantity
                 it[productCode] = productModel.productCode
+            }
+        }
+    }
+
+    override fun updateQuantity(productId: Int, newQuantity: Int) {
+        transaction {
+            ProductsDatabaseTable.update({ ProductsDatabaseTable.id eq productId }) {
+                it[quantity] = newQuantity
             }
         }
     }

@@ -2,7 +2,6 @@ package com.karcz.piotr.routes
 
 import com.karcz.piotr.data.AddressModel
 import com.karcz.piotr.data.CustomerModel
-import com.karcz.piotr.data.OrderModel
 import com.karcz.piotr.repository.dao.*
 import com.karcz.piotr.transfer.data.Response
 import io.ktor.application.*
@@ -17,9 +16,7 @@ import java.sql.SQLException
 fun Route.customerRoute() {
     val customerDao: CustomerDao = CustomerDaoImpl()
     val addressDao: AddressDao = AddressDaoImpl()
-    val orderDetailDao: OrderDetailDao = OrderDetailDaoImpl()
     val orderDao: OrderDao = OrderDaoImpl()
-    val cartDao: CartDao = CartDaoImpl()
 
     authenticate {
         route("/me") {
@@ -43,7 +40,7 @@ fun Route.customerRoute() {
             put {
                 val customerModel = try {
                     call.receive<CustomerModel>()
-                } catch (e: ContentTransformationException) {
+                } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
@@ -71,7 +68,7 @@ fun Route.customerRoute() {
             delete {
                 val customerModel = try {
                     call.receive<CustomerModel>()
-                } catch (e: ContentTransformationException) {
+                } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
@@ -121,42 +118,10 @@ fun Route.customerRoute() {
                 }
             }
 
-            post {
-                val addressModel = try {
-                    call.receive<AddressModel>()
-                } catch (e: ContentTransformationException) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@post
-                }
-
-                val email = call.principal<UserIdPrincipal>()?.name
-                if (email == null) {
-                    call.respond(HttpStatusCode.Forbidden)
-                    return@post
-                }
-
-                val customer = customerDao.get(email)
-                if (customer == null || customer.addressId != addressModel.id) {
-                    call.respond(HttpStatusCode.Forbidden)
-                    return@post
-                }
-
-                if (addressDao.isInOrFalse(addressModel)) {
-                    call.respond(HttpStatusCode.OK, Response(false, "Address already exists."))
-                } else {
-                    try {
-                        addressDao.add(addressModel)
-                    } catch (e: SQLException) {
-                        call.respond(HttpStatusCode.InternalServerError)
-                    }
-                    call.respond(HttpStatusCode.OK, Response(true, "Address added."))
-                }
-            }
-
             put {
                 val addressModel = try {
                     call.receive<AddressModel>()
-                } catch (e: ContentTransformationException) {
+                } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }

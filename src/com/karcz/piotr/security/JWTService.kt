@@ -24,7 +24,7 @@ class JWTService(
             .withAudience(audience)
             .withIssuer(issuer)
             .withClaim("email", email)
-            .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+            .withExpiresAt(Date(System.currentTimeMillis() + 60000 * 30))
             .sign(algorithm)
     }
 }

@@ -11,14 +11,16 @@ DO $$BEGIN
     CREATE TABLE IF NOT EXISTS orderdetailsdatabase ("orderId" INT, "productId" INT, quantity INT NOT NULL, price DOUBLE PRECISION NOT NULL, CONSTRAINT pk_OrderDetailsDatabase PRIMARY KEY ("orderId", "productId"), CONSTRAINT fk_orderdetailsdatabase_orderid_id FOREIGN KEY ("orderId") REFERENCES ordersdatabase(id) ON DELETE CASCADE ON UPDATE CASCADE, CONSTRAINT fk_orderdetailsdatabase_productid_id FOREIGN KEY ("productId") REFERENCES productsdatabase(id) ON DELETE CASCADE ON UPDATE CASCADE);
 
     INSERT INTO addressesdatabase (street, "streetNumber", "flatNumber", "postalCode", country, city) VALUES
-        ('Polk Street', 24, 10, 10-101, 'United States', 'San Francisco'),
-        ('Wall street', 13, 17, 71-912, 'United States', 'New York'),
-        ('Carnaby Street', 206, 39, 21-791, 'United Kingdom', 'London'),
-        ('Carnaby Street', 206, 39, 21-791, 'United Kingdom', 'London');
+        ('Polk Street', 24, 10, '10-101', 'United States', 'San Francisco'),
+        ('Wall street', 13, 17, '71-912', 'United States', 'New York'),
+        ('Carnaby Street', 206, 39, '21-791', 'United Kingdom', 'London'),
+        ('Carnaby Street', 206, 39, '21-791', 'United Kingdom', 'London');
 
     INSERT INTO customersdatabase (email, id, name, surname, password) VALUES
-        ('john.smith@example.com', 1, 'John', 'Smith', 'password'),
-        ('agatha.clarke@example.com', 3, 'Agatha', 'Clarke', 'Password123');
+        -- password for john - "password"
+        ('john.smith@example.com', 1, 'John', 'Smith', '$2a$06$uu4yRDKWeUK2w5ix6e9f3O/iGUHD7QvjuCZ6yc4VifTEYpckFlC4a'),
+        -- password for agatha - "Password123"
+        ('agatha.clarke@example.com', 3, 'Agatha', 'Clarke', '$2a$06$vyKpQFpnqqyw18uQ3a.ONeeEjEDD9OcteVStJKWlwuLha6NRbfmzq');
 
     INSERT INTO productsdatabase (name, price, image, category, description, producer, size, color, popularity, quantity, "productCode") VALUES
         ('Dr. Martens 1460', 700, 'test', 'Hi-tops', 'The 1460 is the original Dr. Martens boot. Its instantly recognizable DNA looks like this: 8 eyes, classic Dr. Martens Smooth leather, grooved sides, a heel-loop, yellow stitching, and a comfortable, air-cushioned sole.', 'Dr. Martens', 42, 'black', 0, 3, 1),

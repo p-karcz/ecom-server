@@ -17,7 +17,7 @@ class OrderDetailDaoImpl : OrderDetailDao {
 
     override fun getAllForOrder(orderId: Int): List<OrderDetailModel> {
         return transaction {
-            OrderDetailsDatabaseTable.selectAll().toList()
+            OrderDetailsDatabaseTable.select { OrderDetailsDatabaseTable.orderId eq orderId }.toList()
         }.map { it.toOrderDetailModel() }
     }
 

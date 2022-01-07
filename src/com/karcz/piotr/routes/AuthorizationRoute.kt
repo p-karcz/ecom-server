@@ -24,7 +24,7 @@ fun Route.authorizationRoute(jwtService: JWTService) {
         post {
             val customerLoginModel = try {
                 call.receive<CustomerLoginModel>()
-            } catch (e: ContentTransformationException) {
+            } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
@@ -50,7 +50,7 @@ fun Route.authorizationRoute(jwtService: JWTService) {
         post {
             val customerRegistrationModel = try {
                 call.receive<CustomerRegistrationModel>()
-            } catch (e: ContentTransformationException) {
+            } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
