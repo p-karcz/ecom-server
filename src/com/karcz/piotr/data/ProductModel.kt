@@ -13,7 +13,9 @@ data class ProductModel(
     val producer: String,
     val size: String,
     val color: String,
-    val popularity: Int
+    val popularity: Int,
+    val quantity: Int,
+    val productCode: Int
 )
 
 fun ResultRow.toProductModel() = ProductModel(
@@ -26,5 +28,7 @@ fun ResultRow.toProductModel() = ProductModel(
     producer = this[ProductsDatabaseTable.producer],
     size = this[ProductsDatabaseTable.size],
     color = this[ProductsDatabaseTable.color],
-    popularity = this[ProductsDatabaseTable.popularity]
+    popularity = this[ProductsDatabaseTable.popularity],
+    quantity = this[ProductsDatabaseTable.quantity],
+    productCode = this[ProductsDatabaseTable.productCode]
 )

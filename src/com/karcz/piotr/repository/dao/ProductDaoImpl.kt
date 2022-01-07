@@ -36,6 +36,15 @@ class ProductDaoImpl : ProductDao {
         }.map { it.toProductModel() }
     }
 
+    override fun getOtherSizesForProduct(productModel: ProductModel): List<ProductModel> {
+        return transaction {
+            ProductsDatabaseTable.select {
+                (ProductsDatabaseTable.productCode eq productModel.productCode) and
+                        (ProductsDatabaseTable.color eq productModel.color)
+            }.toList()
+        }.map { it.toProductModel() }
+    }
+
     override fun getAll(): List<ProductModel> {
         return transaction {
             ProductsDatabaseTable
@@ -64,12 +73,17 @@ class ProductDaoImpl : ProductDao {
     override fun add(productModel: ProductModel) {
         transaction {
             ProductsDatabaseTable.insert {
-                it[id] = productModel.id
                 it[name] = productModel.name
                 it[price] = productModel.price
                 it[image] = productModel.image
                 it[description] = productModel.description
                 it[category] = productModel.category
+                it[producer] = productModel.producer
+                it[size] = productModel.size
+                it[color] = productModel.color
+                it[popularity] = productModel.popularity
+                it[quantity] = productModel.quantity
+                it[productCode] = productModel.productCode
             }
         }
     }
@@ -77,12 +91,17 @@ class ProductDaoImpl : ProductDao {
     override fun update(productModel: ProductModel) {
         transaction {
             ProductsDatabaseTable.update({ ProductsDatabaseTable.id eq productModel.id }) {
-                it[id] = productModel.id
                 it[name] = productModel.name
                 it[price] = productModel.price
                 it[image] = productModel.image
                 it[description] = productModel.description
                 it[category] = productModel.category
+                it[producer] = productModel.producer
+                it[size] = productModel.size
+                it[color] = productModel.color
+                it[popularity] = productModel.popularity
+                it[quantity] = productModel.quantity
+                it[productCode] = productModel.productCode
             }
         }
     }

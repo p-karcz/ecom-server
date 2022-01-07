@@ -20,7 +20,7 @@ object OrdersDatabaseTable : Table() {
     )
     val totalQuantity: Column<Int> = integer("totalQuantity")
     val totalPrice: Column<Double> = double("totalPrice")
-    val date: Column<String> = varchar("date", 20)
+    val date: Column<String> = varchar("date", 30)
 
     override val primaryKey = PrimaryKey(id)
 }

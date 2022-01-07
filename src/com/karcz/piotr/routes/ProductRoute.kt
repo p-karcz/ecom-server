@@ -33,6 +33,25 @@ fun Route.productRoute() {
         }
     }
 
+    route("/products/{productId}/sizes") {
+        get {
+            call.parameters["productId"]?.let {
+                try {
+                    val productId = it.toInt()
+                    val product = productDao.get(productId)
+                    if (product != null) {
+                        val sizes = productDao.getOtherSizesForProduct(product)
+                        call.respond(HttpStatusCode.OK, sizes)
+                    } else {
+                        call.respond(HttpStatusCode.OK, Response(false, "Cannot find product with id: $productId."))
+                    }
+                } catch (e: NumberFormatException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            } ?: call.respond(HttpStatusCode.BadRequest)
+        }
+    }
+
     route("/products") {
         post {
             val orderByParameter = ProductsOrderByQueryParameter.process(call.request.queryParameters["orderBy"])

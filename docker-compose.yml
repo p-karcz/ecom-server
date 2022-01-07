@@ -1,0 +1,30 @@
+version: "3.6"
+
+services:
+  app:
+    build: ./
+    container_name: ecom-backend
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    networks:
+      - server-network
+    depends_on:
+      - database
+  database:
+    build: ./database
+    environment:
+      - POSTGRES_DB=ecomdb
+      - POSTGRES_USER=piotr
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    networks:
+      - server-network
+
+networks:
+  server-network:
+    driver: bridge

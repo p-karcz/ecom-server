@@ -8,6 +8,7 @@ interface ProductDao {
     fun isIn(productModel: ProductModel): Boolean
     fun get(id: Int): ProductModel?
     fun get(filter: ProductsFilterModel, orderBy: ProductsOrderByQueryParameter): List<ProductModel>
+    fun getOtherSizesForProduct(productModel: ProductModel): List<ProductModel>
     fun getAll(): List<ProductModel>
     fun getAllCategories(): List<String>
     fun getAllProducers(): List<String>
