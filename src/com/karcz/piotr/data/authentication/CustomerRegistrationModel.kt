@@ -18,7 +18,7 @@ data class CustomerRegistrationModel(
 ) {
 
     fun toAddressModel() = AddressModel(
-        id = null,
+        id = DEFAULT_NOT_USED_ADDRESS_ID,
         street = street,
         streetNumber = streetNumber,
         flatNumber = flatNumber,
@@ -34,4 +34,8 @@ data class CustomerRegistrationModel(
         surname = surname,
         password = hash(password)
     )
+
+    companion object {
+        const val DEFAULT_NOT_USED_ADDRESS_ID = -1
+    }
 }

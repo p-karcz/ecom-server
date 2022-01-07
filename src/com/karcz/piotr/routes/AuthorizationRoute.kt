@@ -14,6 +14,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import java.sql.SQLException
 
 fun Route.authorizationRoute(jwtService: JWTService) {
     val addressDao: AddressDao = AddressDaoImpl()
@@ -57,8 +58,12 @@ fun Route.authorizationRoute(jwtService: JWTService) {
             if (customerDao.isIn(customerRegistrationModel.email)) {
                 call.respond(HttpStatusCode.OK, Response(false, "This email address is already taken."))
             } else {
-                val addressId = addressDao.add(customerRegistrationModel.toAddressModel())
-                customerDao.add(customerRegistrationModel.toCustomerModel(addressId))
+                try {
+                    val addressId = addressDao.add(customerRegistrationModel.toAddressModel())
+                    customerDao.add(customerRegistrationModel.toCustomerModel(addressId))
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
                 val token = jwtService.create(customerRegistrationModel.email)
                 call.respond(HttpStatusCode.OK, hashMapOf("token" to token))
             }

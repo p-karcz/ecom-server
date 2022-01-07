@@ -8,10 +8,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class AddressDaoImpl : AddressDao {
 
-    override fun isInOrFalse(address: AddressModel): Boolean {
-        if (address.id == null) return false
+    override fun isInOrFalse(addressModel: AddressModel): Boolean {
         return transaction {
-            (AddressesDatabaseTable.select { AddressesDatabaseTable.id eq address.id }.singleOrNull())
+            (AddressesDatabaseTable.select { AddressesDatabaseTable.id eq addressModel.id }.singleOrNull())
         } != null
     }
 
@@ -21,37 +20,35 @@ class AddressDaoImpl : AddressDao {
         }?.toAddressModel()
     }
 
-    override fun add(address: AddressModel): Int {
+    override fun add(addressModel: AddressModel): Int {
         return transaction {
             AddressesDatabaseTable.insert {
-                it[street] = address.street
-                it[streetNumber] = address.streetNumber
-                it[flatNumber] = address.flatNumber
-                it[postalCode] = address.postalCode
-                it[country] = address.country
-                it[city] = address.city
+                it[street] = addressModel.street
+                it[streetNumber] = addressModel.streetNumber
+                it[flatNumber] = addressModel.flatNumber
+                it[postalCode] = addressModel.postalCode
+                it[country] = addressModel.country
+                it[city] = addressModel.city
             }
         } get AddressesDatabaseTable.id
     }
 
-    override fun update(address: AddressModel) {
-        if (address.id == null) return
+    override fun update(addressModel: AddressModel) {
         transaction {
-            AddressesDatabaseTable.update({ AddressesDatabaseTable.id eq address.id }) {
-                it[street] = address.street
-                it[streetNumber] = address.streetNumber
-                it[flatNumber] = address.flatNumber
-                it[postalCode] = address.postalCode
-                it[country] = address.country
-                it[city] = address.city
+            AddressesDatabaseTable.update({ AddressesDatabaseTable.id eq addressModel.id }) {
+                it[street] = addressModel.street
+                it[streetNumber] = addressModel.streetNumber
+                it[flatNumber] = addressModel.flatNumber
+                it[postalCode] = addressModel.postalCode
+                it[country] = addressModel.country
+                it[city] = addressModel.city
             }
         }
     }
 
-    override fun remove(address: AddressModel) {
-        if (address.id == null) return
+    override fun remove(id: Int) {
         transaction {
-            AddressesDatabaseTable.deleteWhere { AddressesDatabaseTable.id eq address.id }
+            AddressesDatabaseTable.deleteWhere { AddressesDatabaseTable.id eq id }
         }
     }
 }

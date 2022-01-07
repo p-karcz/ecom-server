@@ -8,10 +8,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class CartDaoImpl : CartDao {
 
-    override fun isIn(cart: CartModel): Boolean {
+    override fun isIn(cartModel: CartModel): Boolean {
         return transaction { (CartsDatabaseTable.select {
-            (CartsDatabaseTable.customerEmail eq cart.customerEmail) and
-                    (CartsDatabaseTable.productId eq cart.productId)
+            (CartsDatabaseTable.customerEmail eq cartModel.customerEmail) and
+                    (CartsDatabaseTable.productId eq cartModel.productId)
         }.singleOrNull()) } != null
     }
 
@@ -39,25 +39,29 @@ class CartDaoImpl : CartDao {
         }
     }
 
-    override fun update(cart: CartModel) {
+    override fun update(cartModel: CartModel) {
         transaction {
             CartsDatabaseTable.update({
-                (CartsDatabaseTable.customerEmail eq cart.customerEmail) and
-                        (CartsDatabaseTable.productId eq cart.productId)
+                (CartsDatabaseTable.customerEmail eq cartModel.customerEmail) and
+                        (CartsDatabaseTable.productId eq cartModel.productId)
             }) {
-                it[customerEmail] = cart.customerEmail
-                it[productId] = cart.productId
-                it[quantity] = cart.quantity
+                it[quantity] = cartModel.quantity
             }
         }
     }
 
-    override fun remove(cart: CartModel) {
+    override fun remove(cartModel: CartModel) {
         transaction {
             CartsDatabaseTable.deleteWhere {
-                (CartsDatabaseTable.customerEmail eq cart.customerEmail) and
-                        (CartsDatabaseTable.productId eq cart.productId)
+                (CartsDatabaseTable.customerEmail eq cartModel.customerEmail) and
+                        (CartsDatabaseTable.productId eq cartModel.productId)
             }
+        }
+    }
+
+    override fun removeAllForCustomer(customerEmail: String) {
+        transaction {
+            CartsDatabaseTable.deleteWhere { CartsDatabaseTable.customerEmail eq customerEmail }
         }
     }
 }

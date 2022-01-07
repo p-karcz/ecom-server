@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.Table
 
 object CustomersDatabaseTable : Table() {
     val email: Column<String> = varchar("email", 30).uniqueIndex()
-    val addressId: Column<Int?> = reference("id", AddressesDatabaseTable.id).nullable()
+    val addressId: Column<Int> = reference("id", AddressesDatabaseTable.id)
     val name: Column<String> = varchar("name", 20)
     val surname: Column<String> = varchar("surname", 20)
     val password: Column<String> = varchar("password", 400)

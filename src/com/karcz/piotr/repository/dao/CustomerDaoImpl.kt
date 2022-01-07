@@ -23,33 +23,33 @@ class CustomerDaoImpl : CustomerDao {
         }?.toCustomerModel()
     }
 
-    override fun add(customer: CustomerModel) {
+    override fun add(customerModel: CustomerModel) {
         transaction {
             CustomersDatabaseTable.insert {
-                it[email] = customer.email
-                it[addressId] = customer.addressId
-                it[name] = customer.name
-                it[surname] = customer.surname
-                it[password] = customer.password
+                it[email] = customerModel.email
+                it[addressId] = customerModel.addressId
+                it[name] = customerModel.name
+                it[surname] = customerModel.surname
+                it[password] = customerModel.password
             }
         }
     }
 
-    override fun update(customer: CustomerModel) {
+    override fun update(customerModel: CustomerModel) {
         transaction {
-            CustomersDatabaseTable.update({ CustomersDatabaseTable.email eq customer.email }) {
-                it[email] = customer.email
-                it[addressId] = customer.addressId
-                it[name] = customer.name
-                it[surname] = customer.surname
-                it[password] = customer.password
+            CustomersDatabaseTable.update({ CustomersDatabaseTable.email eq customerModel.email }) {
+                it[email] = customerModel.email
+                it[addressId] = customerModel.addressId
+                it[name] = customerModel.name
+                it[surname] = customerModel.surname
+                it[password] = customerModel.password
             }
         }
     }
 
-    override fun remove(customer: CustomerModel) {
+    override fun remove(email: String) {
         transaction {
-            CustomersDatabaseTable.deleteWhere { CustomersDatabaseTable.email eq customer.email }
+            CustomersDatabaseTable.deleteWhere { CustomersDatabaseTable.email eq email }
         }
     }
 }

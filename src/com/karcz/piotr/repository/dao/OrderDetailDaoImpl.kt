@@ -3,22 +3,19 @@ package com.karcz.piotr.repository.dao
 import com.karcz.piotr.data.OrderDetailModel
 import com.karcz.piotr.data.toOrderDetailModel
 import com.karcz.piotr.repository.tables.OrderDetailsDatabaseTable
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class OrderDetailDaoImpl : OrderDetailDao {
 
-    override fun isIn(orderDetails: OrderDetailModel): Boolean {
+    override fun isIn(orderDetailModel: OrderDetailModel): Boolean {
         return transaction { (OrderDetailsDatabaseTable.select {
-            (OrderDetailsDatabaseTable.orderId eq orderDetails.orderId) and
-                    (OrderDetailsDatabaseTable.productId eq orderDetails.productId)
+            (OrderDetailsDatabaseTable.orderId eq orderDetailModel.orderId) and
+                    (OrderDetailsDatabaseTable.productId eq orderDetailModel.productId)
         }.singleOrNull()) } != null
     }
 
-    override fun getAll(orderId: Int): List<OrderDetailModel> {
+    override fun getAllForOrder(orderId: Int): List<OrderDetailModel> {
         return transaction {
             OrderDetailsDatabaseTable.selectAll().toList()
         }.map { it.toOrderDetailModel() }
@@ -32,13 +29,13 @@ class OrderDetailDaoImpl : OrderDetailDao {
         }?.toOrderDetailModel()
     }
 
-    override fun add(orderDetails: OrderDetailModel) {
+    override fun add(orderDetailModel: OrderDetailModel) {
         transaction {
             OrderDetailsDatabaseTable.insert {
-                it[orderId] = orderDetails.orderId
-                it[productId] = orderDetails.productId
-                it[quantity] = orderDetails.quantity
-                it[price] = orderDetails.price
+                it[orderId] = orderDetailModel.orderId
+                it[productId] = orderDetailModel.productId
+                it[quantity] = orderDetailModel.quantity
+                it[price] = orderDetailModel.price
             }
         }
     }

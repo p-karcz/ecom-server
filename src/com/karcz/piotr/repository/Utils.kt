@@ -2,7 +2,6 @@ package com.karcz.piotr.repository
 
 import com.karcz.piotr.repository.tables.*
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun initDatabase(): org.jetbrains.exposed.sql.Database {
@@ -10,6 +9,7 @@ fun initDatabase(): org.jetbrains.exposed.sql.Database {
     transaction {
         SchemaUtils.create(
             AddressesDatabaseTable,
+            CartsDatabaseTable,
             CustomersDatabaseTable,
             OrderDetailsDatabaseTable,
             OrdersDatabaseTable,

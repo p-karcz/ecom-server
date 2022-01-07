@@ -6,11 +6,11 @@ import org.jetbrains.exposed.sql.ResultRow
 
 data class CustomerModel(
     val email: String,
-    val addressId: Int?,
+    val addressId: Int,
     val name: String,
     val surname: String,
     val password: String
-) : Principal
+)
 
 fun ResultRow.toCustomerModel() = CustomerModel(
     email = this[CustomersDatabaseTable.email],

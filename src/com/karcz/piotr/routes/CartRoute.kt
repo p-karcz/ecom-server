@@ -10,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import java.sql.SQLException
 
 fun Route.cartRoute() {
     val cartDao: CartDao = CartDaoImpl()
@@ -17,26 +18,40 @@ fun Route.cartRoute() {
     authenticate {
         route("/me/cart") {
             get {
-                // TODO retrieve email when a user is logged in
-                val cartItems: List<CartModel> = cartDao.getAllForClient("sampleemail@example.com")
-                call.respond(HttpStatusCode.OK, cartItems)
+                val email = call.principal<UserIdPrincipal>()?.name
+                if (email != null) {
+                    val cartItems: List<CartModel> = cartDao.getAllForClient(email)
+                    call.respond(HttpStatusCode.OK, cartItems)
+                } else {
+                    call.respond(HttpStatusCode.NotFound)
+                }
             }
         }
 
         route("/me/cart/addItem") {
             post {
-                val request = try {
+                val cartModel = try {
                     call.receive<CartModel>()
                 } catch (e: ContentTransformationException) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
 
-                if (cartDao.isIn(request)) {
-                    val currentCartItem = cartDao.get(request.customerEmail, request.productId)
-                    cartDao.update(cart = request.copy(quantity = request.quantity + (currentCartItem?.quantity ?: 0)))
-                } else {
-                    cartDao.add(request)
+                val email = call.principal<UserIdPrincipal>()?.name
+                if (email == null || email != cartModel.customerEmail) {
+                    call.respond(HttpStatusCode.Forbidden)
+                    return@post
+                }
+
+                try {
+                    if (cartDao.isIn(cartModel)) {
+                        val currentCartItem = cartDao.get(cartModel.customerEmail, cartModel.productId)
+                        cartDao.update(cartModel = cartModel.copy(quantity = cartModel.quantity + (currentCartItem?.quantity ?: 0)))
+                    } else {
+                        cartDao.add(cartModel)
+                    }
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
 
                 call.respond(HttpStatusCode.OK, Response(true, "Item added to cart."))
@@ -45,15 +60,25 @@ fun Route.cartRoute() {
 
         route("/me/cart/removeItem") {
             delete {
-                val request = try {
+                val cartModel = try {
                     call.receive<CartModel>()
                 } catch (e: ContentTransformationException) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
 
-                if (cartDao.isIn(request)) {
-                    cartDao.remove(request)
+                val email = call.principal<UserIdPrincipal>()?.name
+                if (email == null || email != cartModel.customerEmail) {
+                    call.respond(HttpStatusCode.Forbidden)
+                    return@delete
+                }
+
+                if (cartDao.isIn(cartModel)) {
+                    try {
+                        cartDao.remove(cartModel)
+                    } catch (e: SQLException) {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
                     call.respond(HttpStatusCode.OK, Response(true, "Item removed from cart"))
                 } else {
                     call.respond(HttpStatusCode.OK, Response(false, "Item was already removed from cart"))
@@ -63,15 +88,29 @@ fun Route.cartRoute() {
 
         route("/me/cart/updateItem") {
             put {
-                val request = try {
+                val cartModel = try {
                     call.receive<CartModel>()
                 } catch (e: ContentTransformationException) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
 
-                if (cartDao.isIn(request)) {
-                    cartDao.update(request)
+                val email = call.principal<UserIdPrincipal>()?.name
+                if (email == null || email != cartModel.customerEmail) {
+                    call.respond(HttpStatusCode.Forbidden)
+                    return@put
+                }
+
+                if (cartDao.isIn(cartModel)) {
+                    try {
+                        if (cartModel.quantity > 0) {
+                            cartDao.update(cartModel)
+                        } else {
+                            cartDao.remove(cartModel)
+                        }
+                    } catch (e: SQLException) {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
                     call.respond(HttpStatusCode.OK, Response(true, "Item updated."))
                 } else {
                     call.respond(HttpStatusCode.OK, Response(false, "Item is not in cart."))
@@ -80,3 +119,4 @@ fun Route.cartRoute() {
         }
     }
 }
+

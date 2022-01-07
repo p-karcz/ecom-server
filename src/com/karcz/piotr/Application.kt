@@ -14,6 +14,7 @@ import com.karcz.piotr.security.JWTService
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 
+// TODO implement refresh token
 // TODO add tests
 // TODO implement koin
 // TODO implement coroutines
@@ -21,7 +22,7 @@ import io.ktor.auth.jwt.*
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused")
-@kotlin.jvm.JvmOverloads
+@JvmOverloads
 fun Application.module(testing: Boolean = false) {
     install(ContentNegotiation) {
         gson {}
@@ -57,7 +58,9 @@ fun Application.module(testing: Boolean = false) {
             verifier(jwtService.verifier)
 
             validate { credential ->
-                CustomerDaoImpl().get(credential.payload.getClaim("email").asString())
+                CustomerDaoImpl().get(credential.payload.getClaim("email").asString())?.let {
+                    UserIdPrincipal(it.email)
+                }
             }
         }
     }

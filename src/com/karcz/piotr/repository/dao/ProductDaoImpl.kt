@@ -10,9 +10,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ProductDaoImpl : ProductDao {
 
-    override fun isIn(product: ProductModel): Boolean {
+    override fun isIn(productModel: ProductModel): Boolean {
         return transaction {
-            ProductsDatabaseTable.select { ProductsDatabaseTable.id eq product.id }.singleOrNull()
+            ProductsDatabaseTable.select { ProductsDatabaseTable.id eq productModel.id }.singleOrNull()
         } != null
     }
 
@@ -61,36 +61,36 @@ class ProductDaoImpl : ProductDao {
         return getProductParameterDistinctValues(ProductsDatabaseTable.color)
     }
 
-    override fun add(product: ProductModel) {
+    override fun add(productModel: ProductModel) {
         transaction {
             ProductsDatabaseTable.insert {
-                it[id] = product.id
-                it[name] = product.name
-                it[price] = product.price
-                it[image] = product.image
-                it[description] = product.description
-                it[category] = product.category
+                it[id] = productModel.id
+                it[name] = productModel.name
+                it[price] = productModel.price
+                it[image] = productModel.image
+                it[description] = productModel.description
+                it[category] = productModel.category
             }
         }
     }
 
-    override fun update(product: ProductModel) {
+    override fun update(productModel: ProductModel) {
         transaction {
-            ProductsDatabaseTable.update({ ProductsDatabaseTable.id eq product.id }) {
-                it[id] = product.id
-                it[name] = product.name
-                it[price] = product.price
-                it[image] = product.image
-                it[description] = product.description
-                it[category] = product.category
+            ProductsDatabaseTable.update({ ProductsDatabaseTable.id eq productModel.id }) {
+                it[id] = productModel.id
+                it[name] = productModel.name
+                it[price] = productModel.price
+                it[image] = productModel.image
+                it[description] = productModel.description
+                it[category] = productModel.category
             }
         }
     }
 
-    override fun remove(product: ProductModel) {
+    override fun remove(productModel: ProductModel) {
         transaction {
             ProductsDatabaseTable.deleteWhere {
-                ProductsDatabaseTable.id eq product.id
+                ProductsDatabaseTable.id eq productModel.id
             }
         }
     }
