@@ -1,35 +1,35 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.CartModel
-import com.karcz.piotr.data.toCartModel
+import com.karcz.piotr.domaindata.CartDomainModel
+import com.karcz.piotr.domaindata.toCartDomainModel
 import com.karcz.piotr.repository.tables.CartsDatabaseTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CartDaoImpl : CartDao {
 
-    override fun isIn(cartModel: CartModel): Boolean {
+    override fun isIn(cartDomainModel: CartDomainModel): Boolean {
         return transaction { (CartsDatabaseTable.select {
-            (CartsDatabaseTable.customerEmail eq cartModel.customerEmail) and
-                    (CartsDatabaseTable.productId eq cartModel.productId)
+            (CartsDatabaseTable.customerEmail eq cartDomainModel.customerEmail) and
+                    (CartsDatabaseTable.productId eq cartDomainModel.productId)
         }.singleOrNull()) } != null
     }
 
-    override fun getAllForClient(clientEmail: String): List<CartModel> {
+    override fun getAllForClient(clientEmail: String): List<CartDomainModel> {
         return transaction {
             CartsDatabaseTable.select { CartsDatabaseTable.customerEmail eq clientEmail }.toList()
-        }.map { it.toCartModel() }
+        }.map { it.toCartDomainModel() }
     }
 
-    override fun get(customerEmail: String, productId: Int): CartModel? {
+    override fun get(customerEmail: String, productId: Int): CartDomainModel? {
         return transaction {
             CartsDatabaseTable.select {
                 (CartsDatabaseTable.customerEmail eq customerEmail) and (CartsDatabaseTable.productId eq productId)
             }.singleOrNull()
-        }?.toCartModel()
+        }?.toCartDomainModel()
     }
 
-    override fun add(cart: CartModel) {
+    override fun add(cart: CartDomainModel) {
         transaction {
             CartsDatabaseTable.insert {
                 it[customerEmail] = cart.customerEmail
@@ -39,22 +39,22 @@ class CartDaoImpl : CartDao {
         }
     }
 
-    override fun update(cartModel: CartModel) {
+    override fun update(cartDomainModel: CartDomainModel) {
         transaction {
             CartsDatabaseTable.update({
-                (CartsDatabaseTable.customerEmail eq cartModel.customerEmail) and
-                        (CartsDatabaseTable.productId eq cartModel.productId)
+                (CartsDatabaseTable.customerEmail eq cartDomainModel.customerEmail) and
+                        (CartsDatabaseTable.productId eq cartDomainModel.productId)
             }) {
-                it[quantity] = cartModel.quantity
+                it[quantity] = cartDomainModel.quantity
             }
         }
     }
 
-    override fun remove(cartModel: CartModel) {
+    override fun remove(cartDomainModel: CartDomainModel) {
         transaction {
             CartsDatabaseTable.deleteWhere {
-                (CartsDatabaseTable.customerEmail eq cartModel.customerEmail) and
-                        (CartsDatabaseTable.productId eq cartModel.productId)
+                (CartsDatabaseTable.customerEmail eq cartDomainModel.customerEmail) and
+                        (CartsDatabaseTable.productId eq cartDomainModel.productId)
             }
         }
     }

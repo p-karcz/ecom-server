@@ -1,47 +1,47 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.AddressModel
-import com.karcz.piotr.data.toAddressModel
+import com.karcz.piotr.domaindata.AddressDomainModel
+import com.karcz.piotr.domaindata.toAddressDomainModel
 import com.karcz.piotr.repository.tables.AddressesDatabaseTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class AddressDaoImpl : AddressDao {
 
-    override fun isInOrFalse(addressModel: AddressModel): Boolean {
+    override fun isInOrFalse(addressDomainModel: AddressDomainModel): Boolean {
         return transaction {
-            (AddressesDatabaseTable.select { AddressesDatabaseTable.id eq addressModel.id }.singleOrNull())
+            (AddressesDatabaseTable.select { AddressesDatabaseTable.id eq addressDomainModel.id }.singleOrNull())
         } != null
     }
 
-    override fun get(id: Int): AddressModel? {
+    override fun get(id: Int): AddressDomainModel? {
         return transaction {
             AddressesDatabaseTable.select { AddressesDatabaseTable.id eq id }.singleOrNull()
-        }?.toAddressModel()
+        }?.toAddressDomainModel()
     }
 
-    override fun add(addressModel: AddressModel): Int {
+    override fun add(addressDomainModel: AddressDomainModel): Int {
         return transaction {
             AddressesDatabaseTable.insert {
-                it[street] = addressModel.street
-                it[streetNumber] = addressModel.streetNumber
-                it[flatNumber] = addressModel.flatNumber
-                it[postalCode] = addressModel.postalCode
-                it[country] = addressModel.country
-                it[city] = addressModel.city
+                it[street] = addressDomainModel.street
+                it[streetNumber] = addressDomainModel.streetNumber
+                it[flatNumber] = addressDomainModel.flatNumber
+                it[postalCode] = addressDomainModel.postalCode
+                it[country] = addressDomainModel.country
+                it[city] = addressDomainModel.city
             }
         } get AddressesDatabaseTable.id
     }
 
-    override fun update(addressModel: AddressModel) {
+    override fun update(addressDomainModel: AddressDomainModel) {
         transaction {
-            AddressesDatabaseTable.update({ AddressesDatabaseTable.id eq addressModel.id }) {
-                it[street] = addressModel.street
-                it[streetNumber] = addressModel.streetNumber
-                it[flatNumber] = addressModel.flatNumber
-                it[postalCode] = addressModel.postalCode
-                it[country] = addressModel.country
-                it[city] = addressModel.city
+            AddressesDatabaseTable.update({ AddressesDatabaseTable.id eq addressDomainModel.id }) {
+                it[street] = addressDomainModel.street
+                it[streetNumber] = addressDomainModel.streetNumber
+                it[flatNumber] = addressDomainModel.flatNumber
+                it[postalCode] = addressDomainModel.postalCode
+                it[country] = addressDomainModel.country
+                it[city] = addressDomainModel.city
             }
         }
     }

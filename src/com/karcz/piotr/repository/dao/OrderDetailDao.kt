@@ -1,10 +1,10 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.OrderDetailModel
+import com.karcz.piotr.domaindata.OrderDetailDomainModel
 
 interface OrderDetailDao {
-    fun isIn(orderDetailModel: OrderDetailModel): Boolean
-    fun getAllForOrder(orderId: Int): List<OrderDetailModel>
-    fun get(orderId: Int, productId: Int): OrderDetailModel?
-    fun add(orderDetailModel: OrderDetailModel)
+    fun isIn(orderDetailDomainModel: OrderDetailDomainModel): Boolean
+    fun getAllForOrder(orderId: Int): List<OrderDetailDomainModel>
+    fun get(orderId: Int, productId: Int): OrderDetailDomainModel?
+    fun add(orderDetailDomainModel: OrderDetailDomainModel)
 }

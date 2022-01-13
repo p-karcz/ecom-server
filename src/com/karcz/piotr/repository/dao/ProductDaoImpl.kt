@@ -1,34 +1,34 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.ProductModel
-import com.karcz.piotr.data.toProductModel
+import com.karcz.piotr.domaindata.ProductDomainModel
+import com.karcz.piotr.domaindata.ProductsFilterDomainModel
+import com.karcz.piotr.domaindata.toProductDomainModel
 import com.karcz.piotr.repository.tables.ProductsDatabaseTable
-import com.karcz.piotr.transfer.data.ProductsFilterModel
 import com.karcz.piotr.transfer.qparameters.ProductsOrderByQueryParameter
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ProductDaoImpl : ProductDao {
 
-    override fun isIn(productModel: ProductModel): Boolean {
+    override fun isIn(productDomainModel: ProductDomainModel): Boolean {
         return transaction {
-            ProductsDatabaseTable.select { ProductsDatabaseTable.id eq productModel.id }.singleOrNull()
+            ProductsDatabaseTable.select { ProductsDatabaseTable.id eq productDomainModel.id }.singleOrNull()
         } != null
     }
 
     override fun isAvailable(productId: Int, quantity: Int): Boolean {
         return transaction {
             ProductsDatabaseTable.select { ProductsDatabaseTable.id eq productId }.singleOrNull()
-        }?.toProductModel()?.quantity?.let { it >= quantity } ?: false
+        }?.toProductDomainModel()?.quantity?.let { it >= quantity } ?: false
     }
 
-    override fun get(id: Int): ProductModel? {
+    override fun get(id: Int): ProductDomainModel? {
         return transaction {
             ProductsDatabaseTable.select { ProductsDatabaseTable.id eq id }.singleOrNull()
-        }?.toProductModel()
+        }?.toProductDomainModel()
     }
 
-    override fun get(filter: ProductsFilterModel, orderBy: ProductsOrderByQueryParameter): List<ProductModel> {
+    override fun get(filter: ProductsFilterDomainModel, orderBy: ProductsOrderByQueryParameter): List<ProductDomainModel> {
         return transaction {
             ProductsDatabaseTable.select {
                 (ProductsDatabaseTable.category inList filter.categories) and
@@ -39,34 +39,34 @@ class ProductDaoImpl : ProductDao {
             }
                 .orderBy(orderBy.value)
                 .toList()
-        }.map { it.toProductModel() }
+        }.map { it.toProductDomainModel() }
     }
 
-    override fun getOtherSizesForProduct(productModel: ProductModel): List<ProductModel> {
+    override fun getOtherSizesForProduct(productDomainModel: ProductDomainModel): List<ProductDomainModel> {
         return transaction {
             ProductsDatabaseTable.select {
-                (ProductsDatabaseTable.productCode eq productModel.productCode) and
-                        (ProductsDatabaseTable.color eq productModel.color)
+                (ProductsDatabaseTable.productCode eq productDomainModel.productCode) and
+                        (ProductsDatabaseTable.color eq productDomainModel.color)
             }.toList()
-        }.map { it.toProductModel() }
+        }.map { it.toProductDomainModel() }
     }
 
-    override fun getAll(): List<ProductModel> {
+    override fun getAll(): List<ProductDomainModel> {
         return transaction {
             ProductsDatabaseTable
                 .selectAll()
                 .orderBy(ProductsDatabaseTable.popularity)
                 .toList()
-        }.map { it.toProductModel() }
+        }.map { it.toProductDomainModel() }
     }
 
-    override fun getAllAvailable(): List<ProductModel> {
+    override fun getAllAvailable(): List<ProductDomainModel> {
         return transaction {
             ProductsDatabaseTable
                 .select { ProductsDatabaseTable.quantity greater 0 }
                 .orderBy(ProductsDatabaseTable.popularity)
                 .toList()
-        }.map { it.toProductModel() }
+        }.map { it.toProductDomainModel() }
     }
 
     override fun getAllCategories(): List<String> {
@@ -85,38 +85,38 @@ class ProductDaoImpl : ProductDao {
         return getProductParameterDistinctValues(ProductsDatabaseTable.color)
     }
 
-    override fun add(productModel: ProductModel) {
+    override fun add(productDomainModel: ProductDomainModel) {
         transaction {
             ProductsDatabaseTable.insert {
-                it[name] = productModel.name
-                it[price] = productModel.price
-                it[image] = productModel.image
-                it[description] = productModel.description
-                it[category] = productModel.category
-                it[producer] = productModel.producer
-                it[size] = productModel.size
-                it[color] = productModel.color
-                it[popularity] = productModel.popularity
-                it[quantity] = productModel.quantity
-                it[productCode] = productModel.productCode
+                it[name] = productDomainModel.name
+                it[price] = productDomainModel.price
+                it[image] = productDomainModel.image
+                it[description] = productDomainModel.description
+                it[category] = productDomainModel.category
+                it[producer] = productDomainModel.producer
+                it[size] = productDomainModel.size
+                it[color] = productDomainModel.color
+                it[popularity] = productDomainModel.popularity
+                it[quantity] = productDomainModel.quantity
+                it[productCode] = productDomainModel.productCode
             }
         }
     }
 
-    override fun update(productModel: ProductModel) {
+    override fun update(productDomainModel: ProductDomainModel) {
         transaction {
-            ProductsDatabaseTable.update({ ProductsDatabaseTable.id eq productModel.id }) {
-                it[name] = productModel.name
-                it[price] = productModel.price
-                it[image] = productModel.image
-                it[description] = productModel.description
-                it[category] = productModel.category
-                it[producer] = productModel.producer
-                it[size] = productModel.size
-                it[color] = productModel.color
-                it[popularity] = productModel.popularity
-                it[quantity] = productModel.quantity
-                it[productCode] = productModel.productCode
+            ProductsDatabaseTable.update({ ProductsDatabaseTable.id eq productDomainModel.id }) {
+                it[name] = productDomainModel.name
+                it[price] = productDomainModel.price
+                it[image] = productDomainModel.image
+                it[description] = productDomainModel.description
+                it[category] = productDomainModel.category
+                it[producer] = productDomainModel.producer
+                it[size] = productDomainModel.size
+                it[color] = productDomainModel.color
+                it[popularity] = productDomainModel.popularity
+                it[quantity] = productDomainModel.quantity
+                it[productCode] = productDomainModel.productCode
             }
         }
     }
@@ -129,10 +129,10 @@ class ProductDaoImpl : ProductDao {
         }
     }
 
-    override fun remove(productModel: ProductModel) {
+    override fun remove(productDomainModel: ProductDomainModel) {
         transaction {
             ProductsDatabaseTable.deleteWhere {
-                ProductsDatabaseTable.id eq productModel.id
+                ProductsDatabaseTable.id eq productDomainModel.id
             }
         }
     }

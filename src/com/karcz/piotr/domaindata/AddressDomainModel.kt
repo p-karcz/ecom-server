@@ -1,9 +1,10 @@
-package com.karcz.piotr.data
+package com.karcz.piotr.domaindata
 
 import com.karcz.piotr.repository.tables.AddressesDatabaseTable
+import com.karcz.piotr.transfer.data.AddressTransferModel
 import org.jetbrains.exposed.sql.ResultRow
 
-data class AddressModel(
+data class AddressDomainModel(
     val id: Int,
     val street: String,
     val streetNumber: Int,
@@ -11,9 +12,20 @@ data class AddressModel(
     val postalCode: String,
     val country: String,
     val city: String
-)
+) {
 
-fun ResultRow.toAddressModel() = AddressModel(
+    fun toTransferModel() = AddressTransferModel(
+        id = id,
+        street = street,
+        streetNumber = streetNumber,
+        flatNumber = flatNumber,
+        postalCode = postalCode,
+        country = country,
+        city = city
+    )
+}
+
+fun ResultRow.toAddressDomainModel() = AddressDomainModel(
     id = this[AddressesDatabaseTable.id],
     street = this[AddressesDatabaseTable.street],
     streetNumber = this[AddressesDatabaseTable.streetNumber],

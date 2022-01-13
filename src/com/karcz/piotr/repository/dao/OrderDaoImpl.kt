@@ -1,37 +1,34 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.OrderModel
-import com.karcz.piotr.data.toOrderModel
-import com.karcz.piotr.repository.tables.AddressesDatabaseTable
+import com.karcz.piotr.domaindata.OrderDomainModel
+import com.karcz.piotr.domaindata.toOrderDomainModel
 import com.karcz.piotr.repository.tables.OrdersDatabaseTable
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class OrderDaoImpl : OrderDao {
 
-    override fun get(id: Int): OrderModel? {
+    override fun get(id: Int): OrderDomainModel? {
         return transaction {
             OrdersDatabaseTable.select { OrdersDatabaseTable.id eq id }.singleOrNull()
-        }?.toOrderModel()
+        }?.toOrderDomainModel()
     }
 
-    override fun getAllForCustomer(customerEmail: String): List<OrderModel> {
+    override fun getAllForCustomer(customerEmail: String): List<OrderDomainModel> {
         return transaction {
             OrdersDatabaseTable.select { OrdersDatabaseTable.customerEmail eq customerEmail }.toList()
-        }.map { it.toOrderModel() }
+        }.map { it.toOrderDomainModel() }
     }
 
-    override fun add(orderModel: OrderModel): Int {
+    override fun add(orderDomainModel: OrderDomainModel): Int {
         return transaction {
             OrdersDatabaseTable.insert {
-                it[customerEmail] = orderModel.customerEmail
-                it[addressId] = orderModel.addressId
-                it[totalQuantity] = orderModel.totalQuantity
-                it[totalPrice] = orderModel.totalPrice
-                it[date] = orderModel.date
+                it[customerEmail] = orderDomainModel.customerEmail
+                it[addressId] = orderDomainModel.addressId
+                it[totalQuantity] = orderDomainModel.totalQuantity
+                it[totalPrice] = orderDomainModel.totalPrice
+                it[date] = orderDomainModel.date
             }
         } get OrdersDatabaseTable.id
     }

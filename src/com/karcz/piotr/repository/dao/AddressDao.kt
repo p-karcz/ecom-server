@@ -1,11 +1,11 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.AddressModel
+import com.karcz.piotr.domaindata.AddressDomainModel
 
 interface AddressDao {
-    fun isInOrFalse(addressModel: AddressModel): Boolean
-    fun get(id: Int): AddressModel?
-    fun add(addressModel: AddressModel): Int
-    fun update(addressModel: AddressModel)
+    fun isInOrFalse(addressDomainModel: AddressDomainModel): Boolean
+    fun get(id: Int): AddressDomainModel?
+    fun add(addressDomainModel: AddressDomainModel): Int
+    fun update(addressDomainModel: AddressDomainModel)
     fun remove(id: Int)
 }

@@ -1,10 +1,8 @@
-package com.karcz.piotr.data.authentication
+package com.karcz.piotr.domaindata
 
-import com.karcz.piotr.data.AddressModel
-import com.karcz.piotr.data.CustomerModel
 import com.karcz.piotr.security.hash
 
-data class CustomerRegistrationModel(
+data class CustomerRegistrationDomainModel(
     val email: String,
     val password: String,
     val name: String,
@@ -17,7 +15,7 @@ data class CustomerRegistrationModel(
     val city: String
 ) {
 
-    fun toAddressModel() = AddressModel(
+    fun toAddressDomainModel() = AddressDomainModel(
         id = DEFAULT_NOT_USED_ADDRESS_ID,
         street = street,
         streetNumber = streetNumber,
@@ -27,7 +25,7 @@ data class CustomerRegistrationModel(
         city = city
     )
 
-    fun toCustomerModel(addressId: Int) = CustomerModel(
+    fun toCustomerDomainModel(addressId: Int) = CustomerDomainModel(
         email = email,
         addressId = addressId,
         name = name,

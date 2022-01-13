@@ -1,8 +1,8 @@
 package com.karcz.piotr.routes
 
-import com.karcz.piotr.data.AddressModel
-import com.karcz.piotr.data.CustomerModel
 import com.karcz.piotr.repository.dao.*
+import com.karcz.piotr.transfer.data.AddressTransferModel
+import com.karcz.piotr.transfer.data.CustomerTransferModel
 import com.karcz.piotr.transfer.data.Response
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -29,31 +29,37 @@ fun Route.customerRoute() {
 
                 val customer = customerDao.get(email)
                 if (customer != null) {
-                    call.respond(HttpStatusCode.OK, customer)
+                    call.respond(HttpStatusCode.OK, customer.toTransferModel())
                 } else {
-                    call.respond(HttpStatusCode.OK, Response(false, "Customer does not exist."))
+                    call.respond(HttpStatusCode.OK, CustomerTransferModel())
                 }
             }
         }
 
         route("/me/update") {
             put {
-                val customerModel = try {
-                    call.receive<CustomerModel>()
+                val customerTransferModel = try {
+                    call.receive<CustomerTransferModel>()
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
 
+                val customerDomainModel = customerTransferModel.toDomainModel()
+                if (customerDomainModel == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
                 val email = call.principal<UserIdPrincipal>()?.name
-                if (email == null || email != customerModel.email) {
+                if (email == null || email != customerDomainModel.email) {
                     call.respond(HttpStatusCode.Forbidden)
                     return@put
                 }
 
-                if (customerDao.isIn(customerModel.email)) {
+                if (customerDao.isIn(customerDomainModel.email)) {
                     try {
-                        customerDao.update(customerModel)
+                        customerDao.update(customerDomainModel)
                     } catch (e: SQLException) {
                         call.respond(HttpStatusCode.InternalServerError)
                     }
@@ -66,24 +72,30 @@ fun Route.customerRoute() {
 
         route("/me/removeAccount") {
             delete {
-                val customerModel = try {
-                    call.receive<CustomerModel>()
+                val customerTransferModel = try {
+                    call.receive<CustomerTransferModel>()
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
 
+                val customerDomainModel = customerTransferModel.toDomainModel()
+                if (customerDomainModel == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@delete
+                }
+
                 val email = call.principal<UserIdPrincipal>()?.name
-                if (email == null || email != customerModel.email) {
+                if (email == null || email != customerDomainModel.email) {
                     call.respond(HttpStatusCode.Forbidden)
                     return@delete
                 }
 
-                if (customerDao.isIn(customerModel.email)) {
+                if (customerDao.isIn(customerDomainModel.email)) {
                     try {
                         transaction {
                             val customerOrderAddressesIds = orderDao.getAllAddressesIdsForCustomer(email)
-                            val customerAddressId = customerModel.addressId
+                            val customerAddressId = customerDomainModel.addressId
 
                             customerDao.remove(email)
                             customerOrderAddressesIds.forEach {
@@ -112,16 +124,22 @@ fun Route.customerRoute() {
 
                 val address = customerDao.get(email)?.addressId?.let { addressDao.get(it) }
                 if (address != null) {
-                    call.respond(HttpStatusCode.OK, address)
+                    call.respond(HttpStatusCode.OK, address.toTransferModel())
                 } else {
-                    call.respond(HttpStatusCode.OK, Response(false, "AddressId is not correct."))
+                    call.respond(HttpStatusCode.OK, AddressTransferModel())
                 }
             }
 
             put {
-                val addressModel = try {
-                    call.receive<AddressModel>()
+                val addressTransferModel = try {
+                    call.receive<AddressTransferModel>()
                 } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                val addressDomainModel = addressTransferModel.toDomainModel()
+                if (addressDomainModel == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
@@ -133,14 +151,14 @@ fun Route.customerRoute() {
                 }
 
                 val customer = customerDao.get(email)
-                if (customer == null || customer.addressId != addressModel.id) {
+                if (customer == null || customer.addressId != addressDomainModel.id) {
                     call.respond(HttpStatusCode.Forbidden)
                     return@put
                 }
 
-                if (addressDao.isInOrFalse(addressModel)) {
+                if (addressDao.isInOrFalse(addressDomainModel)) {
                     try {
-                        addressDao.update(addressModel)
+                        addressDao.update(addressDomainModel)
                     } catch (e: SQLException) {
                         call.respond(HttpStatusCode.InternalServerError)
                     }

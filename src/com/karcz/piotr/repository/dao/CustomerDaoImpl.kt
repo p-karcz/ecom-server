@@ -1,7 +1,7 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.CustomerModel
-import com.karcz.piotr.data.toCustomerModel
+import com.karcz.piotr.domaindata.CustomerDomainModel
+import com.karcz.piotr.domaindata.toCustomerDomainModel
 import com.karcz.piotr.repository.tables.CustomersDatabaseTable
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -17,32 +17,32 @@ class CustomerDaoImpl : CustomerDao {
         } != null
     }
 
-    override fun get(email: String): CustomerModel? {
+    override fun get(email: String): CustomerDomainModel? {
         return transaction {
             CustomersDatabaseTable.select { CustomersDatabaseTable.email eq email}.singleOrNull()
-        }?.toCustomerModel()
+        }?.toCustomerDomainModel()
     }
 
-    override fun add(customerModel: CustomerModel) {
+    override fun add(customerDomainModel: CustomerDomainModel) {
         transaction {
             CustomersDatabaseTable.insert {
-                it[email] = customerModel.email
-                it[addressId] = customerModel.addressId
-                it[name] = customerModel.name
-                it[surname] = customerModel.surname
-                it[password] = customerModel.password
+                it[email] = customerDomainModel.email
+                it[addressId] = customerDomainModel.addressId
+                it[name] = customerDomainModel.name
+                it[surname] = customerDomainModel.surname
+                it[password] = customerDomainModel.password
             }
         }
     }
 
-    override fun update(customerModel: CustomerModel) {
+    override fun update(customerDomainModel: CustomerDomainModel) {
         transaction {
-            CustomersDatabaseTable.update({ CustomersDatabaseTable.email eq customerModel.email }) {
-                it[email] = customerModel.email
-                it[addressId] = customerModel.addressId
-                it[name] = customerModel.name
-                it[surname] = customerModel.surname
-                it[password] = customerModel.password
+            CustomersDatabaseTable.update({ CustomersDatabaseTable.email eq customerDomainModel.email }) {
+                it[email] = customerDomainModel.email
+                it[addressId] = customerDomainModel.addressId
+                it[name] = customerDomainModel.name
+                it[surname] = customerDomainModel.surname
+                it[password] = customerDomainModel.password
             }
         }
     }

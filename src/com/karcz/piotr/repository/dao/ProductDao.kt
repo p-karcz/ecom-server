@@ -1,23 +1,23 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.ProductModel
-import com.karcz.piotr.transfer.data.ProductsFilterModel
+import com.karcz.piotr.domaindata.ProductDomainModel
+import com.karcz.piotr.domaindata.ProductsFilterDomainModel
 import com.karcz.piotr.transfer.qparameters.ProductsOrderByQueryParameter
 
 interface ProductDao {
-    fun isIn(productModel: ProductModel): Boolean
+    fun isIn(productDomainModel: ProductDomainModel): Boolean
     fun isAvailable(productId: Int, quantity: Int): Boolean
-    fun get(id: Int): ProductModel?
-    fun get(filter: ProductsFilterModel, orderBy: ProductsOrderByQueryParameter): List<ProductModel>
-    fun getOtherSizesForProduct(productModel: ProductModel): List<ProductModel>
-    fun getAll(): List<ProductModel>
-    fun getAllAvailable(): List<ProductModel>
+    fun get(id: Int): ProductDomainModel?
+    fun get(filter: ProductsFilterDomainModel, orderBy: ProductsOrderByQueryParameter): List<ProductDomainModel>
+    fun getOtherSizesForProduct(productDomainModel: ProductDomainModel): List<ProductDomainModel>
+    fun getAll(): List<ProductDomainModel>
+    fun getAllAvailable(): List<ProductDomainModel>
     fun getAllCategories(): List<String>
     fun getAllProducers(): List<String>
     fun getAllSizes(): List<String>
     fun getAllColors(): List<String>
-    fun add(productModel: ProductModel)
-    fun update(productModel: ProductModel)
+    fun add(productDomainModel: ProductDomainModel)
+    fun update(productDomainModel: ProductDomainModel)
     fun updateQuantity(productId: Int, newQuantity: Int)
-    fun remove(productModel: ProductModel)
+    fun remove(productDomainModel: ProductDomainModel)
 }

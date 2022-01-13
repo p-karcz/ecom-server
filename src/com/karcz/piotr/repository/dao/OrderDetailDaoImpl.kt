@@ -1,41 +1,41 @@
 package com.karcz.piotr.repository.dao
 
-import com.karcz.piotr.data.OrderDetailModel
-import com.karcz.piotr.data.toOrderDetailModel
+import com.karcz.piotr.domaindata.OrderDetailDomainModel
+import com.karcz.piotr.domaindata.toOrderDetailDomainModel
 import com.karcz.piotr.repository.tables.OrderDetailsDatabaseTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class OrderDetailDaoImpl : OrderDetailDao {
 
-    override fun isIn(orderDetailModel: OrderDetailModel): Boolean {
+    override fun isIn(orderDetailDomainModel: OrderDetailDomainModel): Boolean {
         return transaction { (OrderDetailsDatabaseTable.select {
-            (OrderDetailsDatabaseTable.orderId eq orderDetailModel.orderId) and
-                    (OrderDetailsDatabaseTable.productId eq orderDetailModel.productId)
+            (OrderDetailsDatabaseTable.orderId eq orderDetailDomainModel.orderId) and
+                    (OrderDetailsDatabaseTable.productId eq orderDetailDomainModel.productId)
         }.singleOrNull()) } != null
     }
 
-    override fun getAllForOrder(orderId: Int): List<OrderDetailModel> {
+    override fun getAllForOrder(orderId: Int): List<OrderDetailDomainModel> {
         return transaction {
             OrderDetailsDatabaseTable.select { OrderDetailsDatabaseTable.orderId eq orderId }.toList()
-        }.map { it.toOrderDetailModel() }
+        }.map { it.toOrderDetailDomainModel() }
     }
 
-    override fun get(orderId: Int, productId: Int): OrderDetailModel? {
+    override fun get(orderId: Int, productId: Int): OrderDetailDomainModel? {
         return transaction {
             OrderDetailsDatabaseTable.select {
                 (OrderDetailsDatabaseTable.orderId eq orderId) and (OrderDetailsDatabaseTable.productId eq productId)
             }.singleOrNull()
-        }?.toOrderDetailModel()
+        }?.toOrderDetailDomainModel()
     }
 
-    override fun add(orderDetailModel: OrderDetailModel) {
+    override fun add(orderDetailDomainModel: OrderDetailDomainModel) {
         transaction {
             OrderDetailsDatabaseTable.insert {
-                it[orderId] = orderDetailModel.orderId
-                it[productId] = orderDetailModel.productId
-                it[quantity] = orderDetailModel.quantity
-                it[price] = orderDetailModel.price
+                it[orderId] = orderDetailDomainModel.orderId
+                it[productId] = orderDetailDomainModel.productId
+                it[quantity] = orderDetailDomainModel.quantity
+                it[price] = orderDetailDomainModel.price
             }
         }
     }

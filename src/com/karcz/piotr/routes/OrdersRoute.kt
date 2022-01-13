@@ -1,9 +1,10 @@
 package com.karcz.piotr.routes
 
-import com.karcz.piotr.data.OrderModel
+import com.karcz.piotr.domaindata.OrderDomainModel
 import com.karcz.piotr.repository.dao.*
-import com.karcz.piotr.transfer.data.OrderDetailsResponseModel
-import com.karcz.piotr.transfer.data.OrdersRequestModel
+import com.karcz.piotr.transfer.data.AllOrdersTransferModel
+import com.karcz.piotr.transfer.data.AllOrderDetailsWithProductsTransferModel
+import com.karcz.piotr.transfer.data.AllOrderDetailsTransferModel
 import com.karcz.piotr.transfer.data.Response
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -32,13 +33,19 @@ fun Route.ordersRoute() {
                 }
 
                 val orders = orderDao.getAllForCustomer(email)
-                call.respond(HttpStatusCode.OK, orders)
+                call.respond(HttpStatusCode.OK, AllOrdersTransferModel(orders.map { it.toTransferModel() }))
             }
 
             post {
-                val orderRequestModel = try {
-                    call.receive<OrdersRequestModel>()
+                val orderTransferModel = try {
+                    call.receive<AllOrderDetailsTransferModel>()
                 } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+
+                val orderDomainModel = orderTransferModel.toDomainModel()
+                if (orderDomainModel == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
@@ -51,8 +58,8 @@ fun Route.ordersRoute() {
 
                 val customer = customerDao.get(email)
                 val customerAddress = addressDao.get(customer!!.addressId)
-                val totalQuantity = orderRequestModel.orderDetailList.sumOf { it.quantity }
-                val totalPrice = orderRequestModel.orderDetailList.sumOf { it.price }
+                val totalQuantity = orderDomainModel.orderDetailList.sumOf { it.quantity }
+                val totalPrice = orderDomainModel.orderDetailList.sumOf { it.price }
 
                 if (customerAddress == null) {
                     call.respond(HttpStatusCode.NotFound)
@@ -66,8 +73,8 @@ fun Route.ordersRoute() {
                     return@post
                 }
 
-                val newOrder = OrderModel(
-                    OrderModel.DEFAULT_NOT_USED_ORDER_ID,
+                val newOrder = OrderDomainModel(
+                    OrderDomainModel.DEFAULT_NOT_USED_ORDER_ID,
                     email,
                     orderAddressId,
                     totalQuantity,
@@ -75,7 +82,7 @@ fun Route.ordersRoute() {
                     Clock.System.now().toString()
                 )
 
-                if (orderRequestModel.orderDetailList.any { !productDao.isAvailable(it.productId, it.quantity) }) {
+                if (orderDomainModel.orderDetailList.any { !productDao.isAvailable(it.productId, it.quantity) }) {
                     call.respond(HttpStatusCode.OK, Response(false, "There are less available products."))
                     return@post
                 }
@@ -83,7 +90,7 @@ fun Route.ordersRoute() {
                 try {
                     transaction {
                         val newOrderId = orderDao.add(newOrder)
-                        orderRequestModel.orderDetailList.forEach {
+                        orderDomainModel.orderDetailList.forEach {
                             val newQuantity = productDao.get(it.productId)!!.quantity.minus(it.quantity)
                             productDao.updateQuantity(it.productId, newQuantity)
                             orderDetailDao.add(it.copy(orderId = newOrderId))
@@ -121,7 +128,10 @@ fun Route.ordersRoute() {
 
                 val orders = orderDetailDao.getAllForOrder(orderId)
                 val products = orders.mapNotNull { productDao.get(it.productId) }
-                call.respond(HttpStatusCode.OK, OrderDetailsResponseModel(orders, products))
+                call.respond(HttpStatusCode.OK, AllOrderDetailsWithProductsTransferModel(
+                    orders.map { it.toTransferModel() },
+                    products.map { it.toTransferModel() }
+                ))
             }
         }
     }
