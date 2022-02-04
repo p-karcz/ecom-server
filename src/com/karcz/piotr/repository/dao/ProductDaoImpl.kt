@@ -10,12 +10,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ProductDaoImpl : ProductDao {
 
-    override fun isIn(productDomainModel: ProductDomainModel): Boolean {
-        return transaction {
-            ProductsDatabaseTable.select { ProductsDatabaseTable.id eq productDomainModel.id }.singleOrNull()
-        } != null
-    }
-
     override fun isAvailable(productId: Int, quantity: Int): Boolean {
         return transaction {
             ProductsDatabaseTable.select { ProductsDatabaseTable.id eq productId }.singleOrNull()

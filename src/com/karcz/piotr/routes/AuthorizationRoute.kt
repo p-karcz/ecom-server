@@ -69,7 +69,7 @@ fun Route.authorizationRoute(jwtService: JWTService) {
             }
 
             if (customerDao.isIn(customerRegistrationDomainModel.email)) {
-                call.respond(HttpStatusCode.OK, TokenTransferModel())
+                call.respond(HttpStatusCode.Conflict)
             } else {
                 try {
                     val addressId = addressDao.add(customerRegistrationDomainModel.toAddressDomainModel())

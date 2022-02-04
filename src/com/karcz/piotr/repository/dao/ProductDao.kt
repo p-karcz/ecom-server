@@ -5,7 +5,6 @@ import com.karcz.piotr.domaindata.ProductsFilterDomainModel
 import com.karcz.piotr.transfer.qparameters.ProductsOrderByQueryParameter
 
 interface ProductDao {
-    fun isIn(productDomainModel: ProductDomainModel): Boolean
     fun isAvailable(productId: Int, quantity: Int): Boolean
     fun get(id: Int): ProductDomainModel?
     fun get(filter: ProductsFilterDomainModel, orderBy: ProductsOrderByQueryParameter): List<ProductDomainModel>

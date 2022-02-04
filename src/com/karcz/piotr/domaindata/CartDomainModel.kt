@@ -11,7 +11,6 @@ data class CartDomainModel(
 ) {
 
     fun toTransferModel() = CartTransferModel(
-        customerEmail = customerEmail,
         productId = productId,
         quantity = quantity
     )

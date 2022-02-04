@@ -46,15 +46,15 @@ fun Route.cartRoute() {
                     return@post
                 }
 
-                val cartDomainModel = cartTransferModel.toDomainModel()
-                if (cartDomainModel == null) {
-                    call.respond(HttpStatusCode.BadRequest)
+                val email = call.principal<UserIdPrincipal>()?.name
+                if (email == null) {
+                    call.respond(HttpStatusCode.Forbidden)
                     return@post
                 }
 
-                val email = call.principal<UserIdPrincipal>()?.name
-                if (email == null || email != cartDomainModel.customerEmail) {
-                    call.respond(HttpStatusCode.Forbidden)
+                val cartDomainModel = cartTransferModel.toDomainModel(email)
+                if (cartDomainModel == null) {
+                    call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
 
@@ -90,15 +90,15 @@ fun Route.cartRoute() {
                     return@delete
                 }
 
-                val cartDomainModel = cartTransferModel.toDomainModel()
-                if (cartDomainModel == null) {
-                    call.respond(HttpStatusCode.BadRequest)
+                val email = call.principal<UserIdPrincipal>()?.name
+                if (email == null) {
+                    call.respond(HttpStatusCode.Forbidden)
                     return@delete
                 }
 
-                val email = call.principal<UserIdPrincipal>()?.name
-                if (email == null || email != cartDomainModel.customerEmail) {
-                    call.respond(HttpStatusCode.Forbidden)
+                val cartDomainModel = cartTransferModel.toDomainModel(email)
+                if (cartDomainModel == null) {
+                    call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
 
@@ -124,15 +124,15 @@ fun Route.cartRoute() {
                     return@put
                 }
 
-                val cartDomainModel = cartTransferModel.toDomainModel()
-                if (cartDomainModel == null) {
-                    call.respond(HttpStatusCode.BadRequest)
+                val email = call.principal<UserIdPrincipal>()?.name
+                if (email == null) {
+                    call.respond(HttpStatusCode.Forbidden)
                     return@put
                 }
 
-                val email = call.principal<UserIdPrincipal>()?.name
-                if (email == null || email != cartDomainModel.customerEmail) {
-                    call.respond(HttpStatusCode.Forbidden)
+                val cartDomainModel = cartTransferModel.toDomainModel(email)
+                if (cartDomainModel == null) {
+                    call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
 
